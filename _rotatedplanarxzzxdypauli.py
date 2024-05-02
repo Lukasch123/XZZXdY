@@ -1,14 +1,14 @@
 from qecsim.models.rotatedplanar import RotatedPlanarPauli
 
 
-class RotatedPlanarXZYPauli(RotatedPlanarPauli):
+class RotatedPlanarXZZXdYPauli(RotatedPlanarPauli):
     """
     Defines a Pauli operator on a rotated planar XZ/ZX lattice with Hadamard Y applied on the top left diagonal.
     Notes:
     * This is a utility class used by rotated planar implementations of the core models.
-    * It is typically instantiated using :meth:`qecsim.models.rotatedplanarxz.RotatedPlanarXZCode.new_pauli`?
+    * It is typically instantiated using :meth:`qecsim.models.rotatedplanarxz.RotatedPlanarXZZXdYCode.new_pauli`?
     Use cases:
-    * Construct a rotated planar XZY Pauli operator by applying site, plaquette and logical operators:
+    * Construct a rotated planar XZZXdY Pauli operator by applying site, plaquette and logical operators:
       :meth:`site`, :meth:`plaquette`, :meth:`logical_x`, :meth:`logical_z`.
     * Get the single Pauli operator applied to a given site: :meth:`operator`
     * Convert to binary symplectic form: :meth:`to_bsf`.
@@ -26,7 +26,7 @@ class RotatedPlanarXZYPauli(RotatedPlanarPauli):
         :param index: Index identifying the plaquette in the format (x, y).
         :type index: 2-tuple of int
         :return: self (to allow chaining)
-        :rtype: RotatedPlanarXZYPauli
+        :rtype: RotatedPlanarXZZXdYPauli
         """
         x, y = index
         max_site_x, max_site_y = self.code.site_bounds
@@ -74,7 +74,7 @@ class RotatedPlanarXZYPauli(RotatedPlanarPauli):
         * First Z operator applied on lower right qubit gets switched to Y.
         * Operators are applied to the rightmost column to allow optimisation of the MPS decoder.
         :return: self (to allow chaining)
-        :rtype: RotatedPlanarXZPauli
+        :rtype: RotatedPlanarXZZXdYPauli
         """
         max_site_x, max_site_y = self.code.site_bounds
         self.site('Y', (max_site_x, 0))
