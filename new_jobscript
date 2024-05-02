@@ -1,0 +1,21 @@
+#!/bin/bash
+#SBATCH -A C3SE2024-1-4 -p vera
+#SBATCH -C SKYLAKE
+#SBATCH -n 32
+#SBATCH -t 0-01:30:00
+
+# load packages and activate environment
+module load virtualenv/20.23.1-GCCcore-12.3.0 matplotlib/3.7.2-gfbf-2023a SciPy-bundle/2023.07-gfbf-2023a h5py/3.9.0-foss-2023a
+source /cephyr/users/adamud/Vera/adamudvenv/bin/activate
+
+# # copy files to tmpdisk
+# #git clone https://github.com/Lukasch123/XZZX_CDSC.git
+# cd ./XZZX_CDSC
+# cp function.py src/_rotatedplanarxzycode.py src/_rotatedplanarxzypauli.py src/_rotatedplanarxzyrmpsdecoder.py src/test_run.py ./TMPDIR/
+# cd ./TMPDIR
+
+# run the code
+# python3 simulate.py
+python3 simulate.py
+# # move output data to own storage
+# cp chi.json num_error_qubit.json $SLURM_SUBMIT_DIR
