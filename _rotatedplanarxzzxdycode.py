@@ -3,11 +3,11 @@ import operator
 from qecsim.model import cli_description
 from qecsim.models.rotatedplanar import RotatedPlanarCode
 
-from _rotatedplanarxzypauli import RotatedPlanarXZYPauli
+from _rotatedplanarxzzxdypauli import RotatedPlanarXZZXdYPauli
 
 
-@cli_description('Rotated planar XZY (distance INT odd >= 3)')
-class RotatedPlanarXZYCode(RotatedPlanarCode):
+@cli_description('Rotated planar XZZXdY (distance INT odd >= 3)')
+class RotatedPlanarXZZXdYCode(RotatedPlanarCode):
     r"""
     Implements a rotated planar mixed boundary code with XZ/ZX plaquettes with Hadamard Y applied along
     upper-left to lower-right diagonal defined by its lattice size.
@@ -65,7 +65,7 @@ class RotatedPlanarXZYCode(RotatedPlanarCode):
 
     def __init__(self, distance):
         """
-        Initialise new rotated planar XZY code.
+        Initialise new rotated planar XZZXdY code.
 
         :param distance: Number of rows/columns in lattice.
         :type distance: int
@@ -87,7 +87,7 @@ class RotatedPlanarXZYCode(RotatedPlanarCode):
     @property
     def label(self):
         """See :meth:`qecsim.model.StabilizerCode.label`"""
-        return 'Rotated planar XZY {}'.format(self.n_k_d[2])
+        return 'Rotated planar XZZXdY {}'.format(self.n_k_d[2])
 
     # </ StabilizerCode interface methods >
 
@@ -107,4 +107,4 @@ class RotatedPlanarXZYCode(RotatedPlanarCode):
         :return: Rotated planar XZ Pauli
         :rtype: RotatedPlanarXZPauli
         """
-        return RotatedPlanarXZYPauli(self, bsf)
+        return RotatedPlanarXZZXdYPauli(self, bsf)
