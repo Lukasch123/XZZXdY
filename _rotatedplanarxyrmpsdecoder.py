@@ -156,8 +156,8 @@ class RotatedPlanarXYRMPSDecoder(Decoder):
     @classmethod
     def sample_recovery(cls, code, syndrome):
         """
-        Return a sample Pauli consistent with the syndrome, created by applying a path of X(Z) operators between each
-        Z(X)-plaquette, identified by the syndrome, and an X(Z)-boundary.
+        Return a sample Pauli consistent with the syndrome, created by applying a path of X(Y) operators between each
+        Y(X)-plaquette, identified by the syndrome, and an X(Y)-boundary.
 
         :param code: Rotated planar code.
         :type code: RotatedPlanarCode
