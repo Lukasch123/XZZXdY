@@ -104,7 +104,7 @@ class RotatedPlanarXZZXdYCode(RotatedPlanarCode):
 
         :param bsf: Binary symplectic representation of Pauli. (Optional. Defaults to identity.)
         :type bsf: numpy.array (1d)
-        :return: Rotated planar XZ Pauli
-        :rtype: RotatedPlanarXZPauli
+        :return: Rotated planar XZZXdY Pauli
+        :rtype: RotatedPlanarXZZXdYPauli
         """
         return RotatedPlanarXZZXdYPauli(self, bsf)
