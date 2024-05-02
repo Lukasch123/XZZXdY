@@ -17,9 +17,9 @@ logger = logging.getLogger(__name__)
 
 
 @cli_description('Rotated MPS ([chi] INT >=0, [mode] CHAR, ...)')
-class RotatedPlanarXZYRMPSDecoder(RotatedPlanarRMPSDecoder):
+class RotatedPlanarXZZXdYRMPSDecoder(RotatedPlanarRMPSDecoder):
     r"""
-    Implements a rotated planar XZY Rotated Matrix Product State (RMPS) decoder.
+    Implements a rotated planar XZZXdY Rotated Matrix Product State (RMPS) decoder.
 
     Decoding algorithm:
 
@@ -132,12 +132,12 @@ class RotatedPlanarXZYRMPSDecoder(RotatedPlanarRMPSDecoder):
 
         Since X operators are unchanged from Hadamard YZ operations, same sample recovery as for XZZX-code.
 
-        :param code: Rotated planar XZY code.
-        :type code: RotatedPlanarXZYCode
+        :param code: Rotated planar XZZXdY code.
+        :type code: RotatedPlanarXZZXdYCode
         :param syndrome: Syndrome as binary vector.
         :type syndrome: numpy.array (1d)
         :return: Sample recovery operation as rotated planar pauli.
-        :rtype: RotatedPlanarXZYPauli
+        :rtype: RotatedPlanarXZZXdYPauli
         """
         # prepare sample
         sample_recovery = code.new_pauli()
@@ -170,7 +170,7 @@ class RotatedPlanarXZYRMPSDecoder(RotatedPlanarRMPSDecoder):
     def label(self):
         """See :meth:`qecsim.model.Decoder.label`"""
         params = [('chi', self._chi), ('mode', self._mode), ('tol', self._tol), ]
-        return 'Rotated planar XZY RMPS ({})'.format(', '.join('{}={}'.format(k, v) for k, v in params if v))
+        return 'Rotated planar XZZXdY RMPS ({})'.format(', '.join('{}={}'.format(k, v) for k, v in params if v))
 
     class TNC(RotatedPlanarRMPSDecoder.TNC):
         """Tensor network creator"""
