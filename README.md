@@ -7,3 +7,4 @@ This extends qecsim and qsdxzzx and is contained in all _rotatedplanarxzzxdy fil
 This extends only qecsim and is contained in all _rotatedplanarxy files. It changes the plaquette structure used in the XZ code from qecsim to get the XY structure. Some changes are made to the rmps decoder from qecsim to apply it on XY.
 ### Modified_app
 ### Simulate
+Simulate generates the data from the models for the specified code distances and variables, it then saves that data to a .json file.
