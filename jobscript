@@ -11,7 +11,7 @@ source /cephyr/users/adamud/Vera/adamudvenv/bin/activate
 # # copy files to tmpdisk
 # #git clone https://github.com/Lukasch123/XZZX_CDSC.git
 # cd ./XZZX_CDSC
-# cp function.py src/_rotatedplanarxzycode.py src/_rotatedplanarxzypauli.py src/_rotatedplanarxzyrmpsdecoder.py src/test_run.py ./TMPDIR/
+# cp function.py _rotatedplanarxzycode.py _rotatedplanarxzypauli.py _rotatedplanarxzyrmpsdecoder.py test_run.py ./TMPDIR/
 # cd ./TMPDIR
 
 # run the code
