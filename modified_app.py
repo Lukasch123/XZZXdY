@@ -1,5 +1,6 @@
 """
-This module contains functions to generate and merge stabilizer code simulation data. Modified to also return Y commutations.
+This module contains functions to generate and merge stabilizer code simulation data. Modified to also return Y commutations
+and functions to save and load generated data.
 """
 import collections
 import itertools
