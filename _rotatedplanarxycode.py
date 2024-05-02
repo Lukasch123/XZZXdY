@@ -9,8 +9,7 @@ from _rotatedplanarxypauli import RotatedPlanarXYPauli
 @cli_description('Rotated planar XY (distance INT odd >= 3)')
 class RotatedPlanarXYCode(RotatedPlanarCode):
     r"""
-    Implements a rotated planar mixed boundary code with XZ/ZX plaquettes with Hadamard Y applied along
-    upper-left to lower-right diagonal defined by its lattice size.
+    Implements a rotated planar mixed boundary code with XX/XX or YY/YY plaquettes.
 
     In addition to the members defined in :class:`qecsim.model.StabilizerCode`, it provides several lattice methods as
     described below.
@@ -65,7 +64,7 @@ class RotatedPlanarXYCode(RotatedPlanarCode):
 
     def __init__(self, distance):
         """
-        Initialise new rotated planar XZY code.
+        Initialise new rotated planar XY code.
 
         :param distance: Number of rows/columns in lattice.
         :type distance: int
@@ -104,8 +103,8 @@ class RotatedPlanarXYCode(RotatedPlanarCode):
 
         :param bsf: Binary symplectic representation of Pauli. (Optional. Defaults to identity.)
         :type bsf: numpy.array (1d)
-        :return: Rotated planar XZ Pauli
-        :rtype: RotatedPlanarXZPauli
+        :return: Rotated planar XY Pauli
+        :rtype: RotatedPlanarXYPauli
         """
         return RotatedPlanarXYPauli(self, bsf)
     
