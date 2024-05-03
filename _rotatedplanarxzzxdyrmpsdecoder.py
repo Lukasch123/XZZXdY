@@ -12,6 +12,8 @@ from qecsim.model import Decoder, cli_description
 from qecsim.models.generic import DepolarizingErrorModel
 from qecsim.models.rotatedplanar import RotatedPlanarRMPSDecoder
 
+import _rotatedplanarxzzxdypauli
+
 
 logger = logging.getLogger(__name__)
 
@@ -165,6 +167,101 @@ class RotatedPlanarXZZXdYRMPSDecoder(RotatedPlanarRMPSDecoder):
                     site_y += 1
         # return sample
         return sample_recovery
+    
+    def _coset_probabilities(self, prob_dist, sample_pauli):
+        r"""
+        Return the (approximate) probability and sample Pauli for the left coset :math:`fG` of the stabilizer group
+        :math:`G` of the planar code with respect to the given sample Pauli :math:`f`, as well as for the cosets
+        :math:`f\bar{X}G`, :math:`f\bar{Y}G` and :math:`f\bar{Z}G`.
+
+        :param prob_dist: Tuple of probability distribution in the format (P(I), P(X), P(Y), P(Z)).
+        :type prob_dist: 4-tuple of float
+        :param sample_pauli: Sample planar Pauli.
+        :type sample_pauli: PlanarPauli
+        :return: Coset probabilities, Sample Paulis (both in order I, X, Y, Z)
+            E.g. (0.20, 0.10, 0.05, 0.10), (PlanarPauli(...), PlanarPauli(...), PlanarPauli(...), PlanarPauli(...))
+        :rtype: 4-tuple of mp.mpf, 4-tuple of PlanarPauli
+        """
+        # NOTE: all list/tuples in this method are ordered (i, x, y, z)
+        # empty log warnings
+        log_warnings = []
+        # sample paulis
+        sample_paulis = (
+            sample_pauli,
+            sample_pauli.copy().logical_x(),
+            sample_pauli.copy().logical_y(),
+            sample_pauli.copy().logical_y().logical_x()
+        )
+        # tensor networks: tns are common to both contraction by column and by row (after transposition)
+        tns = [self._tnc.create_tn(prob_dist, sp) for sp in sample_paulis]
+        # probabilities
+        coset_ps = (0.0, 0.0, 0.0, 0.0)  # default coset probabilities
+        coset_ps_col = coset_ps_row = None  # undefined coset probabilities by column and row
+        # N.B. After multiplication by mult, coset_ps will be of type mp.mpf so don't process with numpy!
+        if self._mode in ('c', 'a'):
+            # evaluate coset probabilities by column
+            coset_ps_col = [0.0, 0.0, 0.0, 0.0]  # default coset probabilities
+            # note: I,Z and X,Y cosets differ only in the last column (logical Z)
+            try:
+                bra_i, mult = tt.mps2d.contract(tns[0], chi=self._chi, tol=self._tol, stop=-1)  # tns.i
+                coset_ps_col[0] = tt.mps.inner_product(bra_i, tns[0][:, -1]) * mult  # coset_ps_col.i
+                coset_ps_col[3] = tt.mps.inner_product(bra_i, tns[3][:, -1]) * mult  # coset_ps_col.z
+            except (ValueError, np.linalg.LinAlgError) as ex:
+                log_warnings.append('CONTRACTION BY COL FOR I/Z COSET FAILED: {!r}'.format(ex))
+            try:
+                bra_z, mult = tt.mps2d.contract(tns[1], chi=self._chi, tol=self._tol, stop=-1)  # tns.x
+                coset_ps_col[1] = tt.mps.inner_product(bra_z, tns[1][:, -1]) * mult  # coset_ps_col.x
+                coset_ps_col[2] = tt.mps.inner_product(bra_z, tns[2][:, -1]) * mult  # coset_ps_col.y
+            except (ValueError, np.linalg.LinAlgError) as ex:
+                log_warnings.append('CONTRACTION BY COL FOR X/Y COSET FAILED: {!r}'.format(ex))
+            # treat nan as inf so it doesn't get lost
+            coset_ps_col = [mp.inf if mp.isnan(coset_p) else coset_p for coset_p in coset_ps_col]
+        if self._mode in ('r', 'a'):
+            # evaluate coset probabilities by row
+            coset_ps_row = [0.0, 0.0, 0.0, 0.0]  # default coset probabilities
+            # transpose tensor networks
+            tns = [tt.mps2d.transpose(tn) for tn in tns]
+            # note: I,X and Z,Y cosets differ only in the last row (logical X)
+            try:
+                bra_i, mult = tt.mps2d.contract(tns[0], chi=self._chi, tol=self._tol, stop=-1)  # tns.i
+                coset_ps_row[0] = tt.mps.inner_product(bra_i, tns[0][:, -1]) * mult  # coset_ps_row.i
+                coset_ps_row[1] = tt.mps.inner_product(bra_i, tns[1][:, -1]) * mult  # coset_ps_row.x
+            except (ValueError, np.linalg.LinAlgError) as ex:
+                log_warnings.append('CONTRACTION BY ROW FOR I/X COSET FAILED: {!r}'.format(ex))
+            try:
+                bra_x, mult = tt.mps2d.contract(tns[3], chi=self._chi, tol=self._tol, stop=-1)  # tns.x
+                coset_ps_row[3] = tt.mps.inner_product(bra_x, tns[3][:, -1]) * mult  # coset_ps_row.z
+                coset_ps_row[2] = tt.mps.inner_product(bra_x, tns[2][:, -1]) * mult  # coset_ps_row.y
+            except (ValueError, np.linalg.LinAlgError) as ex:
+                log_warnings.append('CONTRACTION BY ROW FOR Z/Y COSET FAILED: {!r}'.format(ex))
+            # treat nan as inf so it doesn't get lost
+            coset_ps_row = [mp.inf if mp.isnan(coset_p) else coset_p for coset_p in coset_ps_row]
+        if self._mode == 'c':
+            coset_ps = coset_ps_col
+        elif self._mode == 'r':
+            coset_ps = coset_ps_row
+        elif self._mode == 'a':
+            # average coset probabilities
+            coset_ps = [sum(coset_p) / len(coset_p) for coset_p in zip(coset_ps_col, coset_ps_row)]
+        # logging
+        if log_warnings:
+            log_data = {
+                # instance
+                'decoder': repr(self),
+                # method parameters
+                'prob_dist': prob_dist,
+                'sample_pauli': pt.pack(sample_pauli.to_bsf()),
+                # variables (convert to string because mp.mpf)
+                'coset_ps_col': [repr(p) for p in coset_ps_col] if coset_ps_col else None,
+                'coset_ps_row': [repr(p) for p in coset_ps_row] if coset_ps_row else None,
+                'coset_ps': [repr(p) for p in coset_ps],
+            }
+            logger.warning('{}: {}'.format(' | '.join(log_warnings), json.dumps(log_data, sort_keys=True)))
+        # results
+        return tuple(coset_ps), sample_paulis
+    
+    
+
 
     @property
     def label(self):
