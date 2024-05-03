@@ -67,9 +67,9 @@ class RotatedPlanarXZZXdYPauli(RotatedPlanarPauli):
         self.site('Z', *((x, 0) for x in range(1, max_site_x + 1, 2)))
         return self
 
-    def logical_z(self):
+    def logical_y(self):
         """
-        Apply a logical Z operator, i.e. alternate Z and X between lower-right and upper-right corners.
+        Apply a logical y operator, i.e. alternate Z and X between lower-right and upper-right corners.
         Notes:
         * First Z operator applied on lower right qubit gets switched to Y.
         * Operators are applied to the rightmost column to allow optimisation of the MPS decoder.
