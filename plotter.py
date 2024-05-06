@@ -47,7 +47,7 @@ for distance in distances:
     index += 1
 
 handles, labels = plt.gca().get_legend_handles_labels()
-custom_lines = [plt.Line2D([], [], color=color_strings_yr[0], linestyle='-'), plt.Line2D([], [], color=color_strings_yr[0], linestyle='--')]
+custom_lines = [plt.Line2D([], [], color=color_strings_or[0], linestyle='-'), plt.Line2D([], [], color=color_strings_or[0], linestyle='--')]
 
 custom_tick_position = (1+1/eta)/(2+1/eta)
 custom_tick_label = r'$p_s$'
